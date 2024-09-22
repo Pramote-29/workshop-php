@@ -30,7 +30,7 @@ if (empty($email) || empty($password)) {
 
             // ตรวจสอบบทบาทของผู้ใช้และเปลี่ยนเส้นทางไปยังหน้า dashboard ที่ถูกต้อง
             if ($userData['role'] == 'admin') {
-                header('location: admin_dashboard.php');
+                header('location: admin_view-books.php');
             } else {
                 header('location: user_dashboard.php');
             }

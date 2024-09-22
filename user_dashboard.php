@@ -20,12 +20,13 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <title>User Dashboard - Book Store</title>
 </head>
 
 <body>
     <div class="container">
-        <?php include('./includes/user_nav.php'); ?>
+        <?php include('./includes/nav-cart.php'); ?>
     </div>
     <div class="container">
         <h1 class="my-5 text-center">Book Store</h1>
@@ -42,13 +43,41 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <p class="card-text"><strong>Price:</strong> $<?= htmlspecialchars($book['price']) ?></p>
                         <p class="card-text"><strong>Stock:</strong> <?= htmlspecialchars($book['stock']) ?></p>
                         <!-- ปุ่ม Add to Cart -->
-                        <a href="cart.php?action=add&id=<?= $book['id'] ?>" class="btn btn-primary">Add to Cart</a>
+                        <button class="btn btn-primary" onclick="addToCart(<?= $book['id'] ?>)">Add to Cart</button>
                     </div>
                 </div>
             </div>
             <?php endforeach; ?>
         </div>
     </div>
+
+    <!-- ฟังก์ชัน Add to Cart ผ่าน AJAX -->
+    <script>
+    function addToCart(book_id) {
+        // ส่งข้อมูลด้วย AJAX
+        fetch('add_to_cart.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    book_id: book_id
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // อัปเดตยอดรวมในตะกร้าสินค้า
+                    document.getElementById('cart-total').innerText = data.total;
+                } else {
+                    alert('Failed to add to cart.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+    </script>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

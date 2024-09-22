@@ -46,6 +46,9 @@ foreach ($cart_items as $item) {
 
 <body>
     <div class="container">
+        <?php include('./includes/back-cart.php'); ?>
+    </div>
+    <div class="container">
         <h1 class="my-5">Your Cart</h1>
         <table class="table table-striped">
             <thead>

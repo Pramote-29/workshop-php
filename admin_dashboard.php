@@ -14,6 +14,11 @@ if (isset($_POST['action'])) {
         $stmt = $pdo->prepare('INSERT INTO books (title, author, price, stock, cover_image) VALUES (?, ?, ?, ?, ?)');
         $stmt->execute([$_POST['title'], $_POST['author'], $_POST['price'], $_POST['stock'], $_POST['cover_image']]);
     } elseif ($_POST['action'] == 'delete') {
+        // ลบรายการใน cart_items ก่อนที่จะลบหนังสือ
+        $stmt = $pdo->prepare('DELETE FROM cart_items WHERE book_id = ?');
+        $stmt->execute([$_POST['id']]);
+
+        // ลบหนังสือใน books
         $stmt = $pdo->prepare('DELETE FROM books WHERE id = ?');
         $stmt->execute([$_POST['id']]);
     } elseif ($_POST['action'] == 'edit') {
@@ -26,6 +31,7 @@ if (isset($_POST['action'])) {
 $stmt = $pdo->query('SELECT * FROM books');
 $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
