@@ -45,7 +45,7 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
     <div class="container">
-        <?php include('./includes/admin_nav.php'); ?>
+        <?php include('./includes/admin_nav-manage.php'); ?>
     </div>
     <div class="container">
         <h1 class="my-5">Admin Dashboard - Manage Books</h1>

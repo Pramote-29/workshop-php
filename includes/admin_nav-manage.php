@@ -14,6 +14,7 @@
         <?php } else { ?>
         <!-- ปุ่มสำหรับ admin: เพิ่มปุ่ม Admin Manage Book และ Back to View Books -->
         <?php if ($_SESSION['role'] == 'admin') { ?>
+        <a href="admin_view-books.php" class="btn btn-outline-secondary me-2 d-inline-block">Back</a>
         <a href="admin_dashboard.php" class="btn btn-primary me-2 d-inline-block">Admin</a>
         <?php } ?>
         <!-- ปุ่ม Logout -->
