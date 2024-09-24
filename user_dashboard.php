@@ -50,6 +50,7 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php endforeach; ?>
         </div>
     </div>
+    <?php include('./includes/footer.php') ?>
 
     <!-- ฟังก์ชัน Add to Cart ผ่าน AJAX -->
     <script>

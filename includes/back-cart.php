@@ -17,7 +17,7 @@
             $stmt->execute([$_SESSION['user_id']]);
             $cart_total = $stmt->fetchColumn() ?: 0.00; // ถ้าไม่มีสินค้าให้แสดง 0.00
         ?>
-        <a href="user_dashboard.php" class="btn btn-primary">Back</a>
+        <a href="user_dashboard.php" class="btn btn-primary me-2">Back</a>
         <!-- ปุ่ม Logout และไอคอนตะกร้าสินค้า -->
         <a href="cart.php" class="btn btn-outline-secondary me-2">
             <i class="bi bi-cart"></i> <!-- ไอคอนตะกร้าสินค้า -->
