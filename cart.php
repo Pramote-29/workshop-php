@@ -32,6 +32,29 @@ $total = 0;
 foreach ($cart_items as $item) {
     $total += $item['price'] * $item['quantity'];
 }
+
+// ฟังก์ชันการชำระเงิน
+if (isset($_POST['checkout'])) {
+    // บันทึกข้อมูลการสั่งซื้อ
+    $stmt = $pdo->prepare('INSERT INTO orders (user_id, total_price, order_date) VALUES (?, ?, NOW())');
+    $stmt->execute([$_SESSION['user_id'], $total]);
+    $order_id = $pdo->lastInsertId();
+
+    // บันทึกรายละเอียดการสั่งซื้อ
+    foreach ($cart_items as $item) {
+        $stmt = $pdo->prepare('INSERT INTO order_items (order_id, book_id, quantity, price) VALUES (?, ?, ?, ?)');
+        $stmt->execute([$order_id, $item['book_id'], $item['quantity'], $item['price']]);
+    }
+
+    // ลบสินค้าที่อยู่ในตะกร้า
+    $stmt = $pdo->prepare('DELETE FROM cart_items WHERE user_id = ?');
+    $stmt->execute([$_SESSION['user_id']]);
+
+    // หลังจากชำระเงินเสร็จสิ้น นำผู้ใช้ไปที่หน้าคำสั่งซื้อ
+    $_SESSION['message'] = 'Your order has been placed successfully!';
+    header('location: orders.php');
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -72,8 +95,16 @@ foreach ($cart_items as $item) {
                 <?php endforeach; ?>
             </tbody>
         </table>
-        <h3>Total: $<?= $total ?></h3>
+        <h3>Total: $<?= number_format($total, 2) ?></h3>
+
+        <!-- ปุ่มชำระเงิน -->
+        <form method="post" action="cart.php">
+            <button type="submit" name="checkout" class="btn btn-success">Proceed to Checkout</button>
+        </form>
     </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

@@ -16,12 +16,24 @@
             $stmt = $pdo->prepare('SELECT SUM(books.price * cart_items.quantity) AS total FROM cart_items JOIN books ON cart_items.book_id = books.id WHERE cart_items.user_id = ?');
             $stmt->execute([$_SESSION['user_id']]);
             $cart_total = $stmt->fetchColumn() ?: 0.00; // ถ้าไม่มีสินค้าให้แสดง 0.00
+
+            // ดึงจำนวนหนังสือที่ผู้ใช้ยืม
+            $stmt = $pdo->prepare('SELECT COUNT(*) FROM borrow_records WHERE user_id = ? AND status = "borrowed"');
+            $stmt->execute([$_SESSION['user_id']]);
+            $borrowed_count = $stmt->fetchColumn() ?: 0; // ถ้าไม่มีการยืมให้แสดง 0
         ?>
         <!-- ปุ่ม Logout และไอคอนตะกร้าสินค้า -->
         <a href="cart.php" class="btn btn-outline-secondary me-2">
             <i class="bi bi-cart"></i> <!-- ไอคอนตะกร้าสินค้า -->
             ฿<span id="cart-total"><?= number_format($cart_total, 2) ?></span>
         </a>
+
+        <!-- ปุ่มแสดงจำนวนหนังสือที่ยืม -->
+        <a href="borrowed_books.php" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-book me-2"></i> <!-- ไอคอนหนังสือที่ยืม -->
+            <span id="borrow-count"><?= $borrowed_count ?></span>
+        </a>
+
         <a href="logout.php" class="btn btn-danger">Logout</a>
         <?php } ?>
     </div>

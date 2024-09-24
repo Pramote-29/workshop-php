@@ -11,6 +11,11 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'user') {
 // ดึงข้อมูลหนังสือทั้งหมดจากฐานข้อมูล
 $stmt = $pdo->query('SELECT * FROM books');
 $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// ดึงรายการหนังสือที่ผู้ใช้ได้ยืม
+$stmt = $pdo->prepare('SELECT borrow_records.id, books.title, borrow_records.borrow_date, borrow_records.status FROM borrow_records JOIN books ON borrow_records.book_id = books.id WHERE borrow_records.user_id = ? AND borrow_records.status = "borrowed"');
+$stmt->execute([$_SESSION['user_id']]);
+$borrowed_books = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -43,13 +48,17 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <p class="card-text"><strong>Price:</strong> $<?= htmlspecialchars($book['price']) ?></p>
                         <p class="card-text"><strong>Stock:</strong> <?= htmlspecialchars($book['stock']) ?></p>
                         <!-- ปุ่ม Add to Cart -->
-                        <button class="btn btn-primary" onclick="addToCart(<?= $book['id'] ?>)">Add to Cart</button>
+                        <button class="btn btn-primary me-2" onclick="addToCart(<?= $book['id'] ?>)">Add to
+                            Cart</button>
+                        <!-- ปุ่ม Borrow -->
+                        <button class="btn btn-secondary" onclick="borrowBook(<?= $book['id'] ?>)">Borrow</button>
                     </div>
                 </div>
             </div>
             <?php endforeach; ?>
         </div>
     </div>
+
     <?php include('./includes/footer.php') ?>
 
     <!-- ฟังก์ชัน Add to Cart ผ่าน AJAX -->
@@ -72,6 +81,31 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     document.getElementById('cart-total').innerText = data.total;
                 } else {
                     alert('Failed to add to cart.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    // ฟังก์ชัน Borrow ผ่าน AJAX
+    function borrowBook(book_id) {
+        // ส่งข้อมูลด้วย AJAX เพื่อทำการยืมหนังสือ
+        fetch('borrow_book.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    book_id: book_id
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Book borrowed successfully!');
+                } else {
+                    alert('Failed to borrow book.');
                 }
             })
             .catch(error => {
